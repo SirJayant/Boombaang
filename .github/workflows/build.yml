@@ -1,0 +1,33 @@
+name: Build ReVanced Patch
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: read
+      contents: read
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        
+    - name: Build ReVanced Patch with Gradle
+      run: ./gradlew build
+      env:
+        # This completely bypasses the local token error!
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Upload Compiled Patch
+      uses: actions/upload-artifact@v4
+      with:
+        name: Classplus-GodMode-Patch
+        path: build/libs/*.jar
